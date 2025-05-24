@@ -1,107 +1,51 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>マイページ：メモ・画像・ファイル</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    h2 {
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 4px;
-    }
-    textarea {
-      width: 100%;
-      height: 150px;
-    }
-    img {
-      max-width: 100%;
-      height: auto;
-      margin-top: 10px;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    li {
-      margin-bottom: 5px;
-    }
-  </style>
-</head>
-<body>
+<h2>📝 メモ</h2>
+<textarea id="memoInput" placeholder="ここにメモを入力してください"></textarea><br>
+<button onclick="addMemo()">追加</button>
+<button onclick="clearMemos()">クリア</button>
 
-  <h1>マイページ</h1>
+<ul id="memoList" style="margin-top: 10px;"></ul>
 
-  <!-- 📘 メモ帳 -->
-  <h2>📝 メモ</h2>
-  <textarea id="memo"></textarea><br>
-  <button onclick="saveMemo()">保存</button>
-  <button onclick="loadMemo()">読み込み</button>
+<script>
+  // メモを保存するキー
+  const MEMO_KEY = 'myMemos';
 
-  <!-- 🖼 画像アップロード -->
-  <h2>🖼 画像アップロード</h2>
-  <input type="file" id="imageInput" accept="image/*"><br>
-  <img id="imagePreview" src="" alt="まだ画像がありません">
+  // メモを追加
+  function addMemo() {
+    const input = document.getElementById('memoInput');
+    const text = input.value.trim();
+    if (text === '') return;
 
-  <!-- 📁 ファイルアップロード -->
-  <h2>📁 ファイルアップロード</h2>
-  <input type="file" id="fileInput" multiple><br><br>
-  <ul id="fileList"></ul>
+    const memos = getSavedMemos();
+    memos.push(text);
+    localStorage.setItem(MEMO_KEY, JSON.stringify(memos));
+    input.value = '';
+    renderMemos();
+  }
 
-  <script>
-    // 🔹 メモ保存・読み込み
-    function saveMemo() {
-      const text = document.getElementById('memo').value;
-      localStorage.setItem('myMemo', text);
-      alert('メモを保存しました！');
-    }
+  // メモを表示する
+  function renderMemos() {
+    const memos = getSavedMemos();
+    const memoList = document.getElementById('memoList');
+    memoList.innerHTML = '';
 
-    function loadMemo() {
-      const saved = localStorage.getItem('myMemo');
-      document.getElementById('memo').value = saved || '';
-    }
-
-    // 🔹 画像プレビュー
-    const imageInput = document.getElementById('imageInput');
-    const imagePreview = document.getElementById('imagePreview');
-
-    imageInput.addEventListener('change', function () {
-      const file = imageInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          imagePreview.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
+    memos.forEach((memo, index) => {
+      const li = document.createElement('li');
+      li.textContent = memo;
+      memoList.appendChild(li);
     });
+  }
 
-    // 🔹 ファイル一覧表示
-    const fileInput = document.getElementById('fileInput');
-    const fileList = document.getElementById('fileList');
+  // 保存されているメモを取得（なければ空の配列）
+  function getSavedMemos() {
+    return JSON.parse(localStorage.getItem(MEMO_KEY)) || [];
+  }
 
-    fileInput.addEventListener('change', function () {
-      fileList.innerHTML = '';
-      const files = Array.from(fileInput.files);
+  // メモをクリア
+  function clearMemos() {
+    localStorage.removeItem(MEMO_KEY);
+    renderMemos();
+  }
 
-      files.forEach(file => {
-        const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.textContent = file.name;
-        link.href = URL.createObjectURL(file);
-        link.download = file.name;
-        link.target = "_blank";
-        li.appendChild(link);
-        fileList.appendChild(li);
-      });
-    });
-
-    // ページ読み込み時にメモを自動読み込み
-    window.onload = loadMemo;
-  </script>
-
-</body>
-</html>
+  // ページ読み込み時に表示
+  window.onload = renderMemos;
+</script>
