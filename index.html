@@ -29,6 +29,10 @@
     li {
       margin-bottom: 5px;
     }
+    button {
+      margin-top: 5px;
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -39,17 +43,19 @@
   <h2>📝 メモ</h2>
   <textarea id="memoInput" placeholder="ここにメモを入力してください"></textarea><br>
   <button onclick="addMemo()">追加</button>
-  <button onclick="clearMemos()">クリア</button>
+  <button onclick="clearMemos()">メモクリア</button>
   <ul id="memoList" style="margin-top: 10px;"></ul>
 
   <!-- 🖼 画像アップロード -->
   <h2>🖼 画像アップロード</h2>
   <input type="file" id="imageInput" accept="image/*"><br>
+  <button onclick="clearImage()">画像クリア</button><br>
   <img id="imagePreview" src="" alt="まだ画像がありません">
 
   <!-- 📁 ファイルアップロード -->
   <h2>📁 ファイルアップロード</h2>
-  <input type="file" id="fileInput" multiple><br><br>
+  <input type="file" id="fileInput" multiple><br>
+  <button onclick="clearFiles()">ファイルクリア</button><br><br>
   <ul id="fileList"></ul>
 
   <script>
@@ -88,7 +94,7 @@
       renderMemos();
     }
 
-    // ==== 🖼 画像プレビュー ====
+    // ==== 🖼 画像機能 ====
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
 
@@ -103,7 +109,12 @@
       }
     });
 
-    // ==== 📁 ファイル一覧 ====
+    function clearImage() {
+      document.getElementById('imageInput').value = '';
+      document.getElementById('imagePreview').src = '';
+    }
+
+    // ==== 📁 ファイル機能 ====
     const fileInput = document.getElementById('fileInput');
     const fileList = document.getElementById('fileList');
 
@@ -123,7 +134,12 @@
       });
     });
 
-    // ==== ページ読み込み時にメモ読み込み ====
+    function clearFiles() {
+      document.getElementById('fileInput').value = '';
+      document.getElementById('fileList').innerHTML = '';
+    }
+
+    // ==== 初期表示（メモ） ====
     window.onload = renderMemos;
   </script>
 
