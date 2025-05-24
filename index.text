@@ -1,1 +1,0 @@
-# kyouyu-ayaka.github.io
